@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Purchases</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Time</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for p in purchases %}
+        <tr>
+            <td>{{ p.menu_item.title }}</td>
+            <td>{{ p.quantity }}</td>
+            <td>{{ p.time_stamp }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

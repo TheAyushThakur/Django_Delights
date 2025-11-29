@@ -3,16 +3,16 @@ from django.db import models
 # Create your models here.
 class Ingredients(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    quantity = models.DecimalField(max_digits=10, decimal_places=4)
+    quantity = models.DecimalField(max_digits=10, decimal_places=1)
     units =models.CharField(max_length=5)
-    price_per_unit = models.DecimalField(max_digits=10, decimal_places=4)
+    price_per_unit = models.DecimalField(max_digits=10, decimal_places=3)
 
     def __str__(self):
         return self.name
 
 class MenuItem(models.Model):
     title = models.CharField(max_length=100, unique=True)
-    price = models.DecimalField(max_digits=10, decimal_places=4)
+    price = models.DecimalField(max_digits=10, decimal_places=3)
 
     def __str__(self):
         return f" Item: {self.title} - Price: {self.price}"

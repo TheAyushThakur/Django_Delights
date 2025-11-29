@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1>Welcome to Django Delights</h1>
+    <p class="lead">Restaurant Inventory & Sales Management System</p>
+
+    <hr>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <a href="{% url 'inventory-list' %}" class="btn btn-primary w-100">Inventory</a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'menu-list' %}" class="btn btn-success w-100">Menu</a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'purchase-list' %}" class="btn btn-warning w-100">Purchases</a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'finance-report' %}" class="btn btn-danger w-100">Finance Report</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

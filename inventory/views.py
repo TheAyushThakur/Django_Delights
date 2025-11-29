@@ -1,36 +1,53 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DeleteView
 from django.db.models import Sum, F
 from .models import Ingredients, MenuItem, RecipieRequirements, Purchase
+from django.urls import reverse_lazy
 
-class ReportView(TemplateView):
-    template_name = "inventory/report.html"
+class HomeView(TemplateView):
+    template_name = 'inventory/home.html'
+class InventoryView(ListView):
+    model = Ingredients
+    template_name = 'inventory/inventory_list.html'
+    context_object_name = 'ingredients'
+
+class IngredientDeleteView(DeleteView):
+    model = Ingredients
+    template_name = 'inventory/ingredient_delete.html'
+    success_url = '/inventory/list/'
+
+
+class MenuListView(ListView):
+    model = MenuItem
+    template_name = 'inventory/menu_list.html'
+    context_object_name = 'menu_items'
+
+class PurchaseListView(ListView):
+    model = Purchase
+    template_name = 'inventory/purchase_list.html'
+    context_object_name = 'purchases'
+
+class FinanceReportView(TemplateView):
+    template_name = 'inventory/finance_report.html'
 
     def get_context_data(self, **kwargs):
-        
-        context =   super().get_context_data(**kwargs)
-
-        context["inventory"] = Ingredients.objects.all()
-
-        context["purchases"] = Purchase.objects.all()
-
-        context["menu_items"] = MenuItem.objects.all()
+        context = super().get_context_data(**kwargs)
 
         total_revenue = Purchase.objects.aggregate(
-            revenue = Sum(F('menu_item__price')*F('quantity'))
-        ) ['revenue'] or 0
-        context["total_revenue"] = total_revenue
+            revenue = Sum(F('menu_item__price') * F('quantity')) 
+        )['revenue'] or 0
+
 
         total_cost = 0
-        for purchase in Purchase.objects.all():
+        purchases = Purchase.objects.all()
+        for purchase in purchases:
             reqs = RecipieRequirements.objects.filter(menu_item=purchase.menu_item)
 
             for req in reqs:
-                ingredient_cost = req.ingredient.price_per_unit * req.quantity
-                total_cost += ingredient_cost * purchase.quantity
+                ingredient_cost = req.ingredient.price_per_unit* req.quantity
+                total_cost += ingredient_cost* purchase.quantity
 
+        context['total_revenue'] = total_revenue
         context['total_cost'] = total_cost
-
         context['profit'] = total_revenue - total_cost
-
         return context
-        
+    
