@@ -27,7 +27,8 @@ class RecipieRequirements(models.Model):
 
 class Purchase(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
     time_stamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Purchased {self.menu_item.title} on {self.time_stamp}"
+        return f"Purchased {self.menu_item.title}x{self.quantity} on {self.time_stamp}"
