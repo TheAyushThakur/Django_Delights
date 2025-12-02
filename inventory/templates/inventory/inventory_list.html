@@ -22,13 +22,21 @@
             <td>{{ ing.units }}</td>
             <td>{{ ing.price_per_unit }}</td>
             <td>
-                <form method="post" action="{% url 'ingredient-delete' ing.pk %}" style="display:inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
+                <a href="{% url 'ingredient-update' ing.pk %}" class="btn btn-sm btn-success">
+                    Update
+                </a>
+
+                <a href="{% url 'ingredient-delete' ing.pk %}" class="btn btn-sm btn-danger">
+                    Delete
+                </a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<a href="{% url 'ingredient-add' %}" class="btn btn-primary mb-3">
+    Add Ingredient
+</a>
+
 {% endblock %}

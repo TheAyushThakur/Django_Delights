@@ -20,7 +20,7 @@ class MenuItem(models.Model):
 class RecipieRequirements(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.quantity} {self.ingredient.units} of {self.ingredient.name} for {self.menu_item.title}"

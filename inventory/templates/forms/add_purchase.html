@@ -2,12 +2,6 @@
 {% block content %}
 <h2>Record Purchase</h2>
 
-{% if messages %}
-    {% for msg in messages %}
-        <div class="alert alert-danger">{{ msg }}</div>
-    {% endfor %}
-{% endif %}
-
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}

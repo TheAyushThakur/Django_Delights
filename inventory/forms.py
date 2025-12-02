@@ -11,6 +11,14 @@ class MenuItemForm(forms.ModelForm):
         model = MenuItem
         fields = ['title', 'price']
 
+MenuItemFormSet = forms.inlineformset_factory(
+    MenuItem,
+    RecipieRequirements,
+    fields=('ingredient', 'quantity'),
+    extra=1,
+    can_delete=False
+)
+
 class RecipieRequirementsForm(forms.ModelForm):
     class Meta:
         model = RecipieRequirements

@@ -1,10 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
+
 <h2>Add Menu Item</h2>
 
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary">Add Menu Item</button>
+
+    <div class="card p-3 mb-4">
+        <h4>Menu Item</h4>
+        {{ item_form.as_p }}
+    </div>
+
+    <div class="card p-3">
+        <h4>Recipe Requirements</h4>
+
+        {{ formset.management_form }}
+
+        {% for form in formset %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.ingredient.label_tag }}
+                    {{ form.ingredient }}
+                </div>
+
+                <div class="col-md-6">
+                    {{ form.quantity.label_tag }}
+                    {{ form.quantity }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button class="btn btn-primary mt-3">Save</button>
 </form>
+
 {% endblock %}

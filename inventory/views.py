@@ -1,8 +1,8 @@
 from django.views.generic import TemplateView, ListView, DeleteView, CreateView, UpdateView
 from django.db.models import Sum, F
 from .models import Ingredients, MenuItem, RecipieRequirements, Purchase
-from .forms import IngredientForm, MenuItemForm, RecipieRequirementsForm, PurchaseForm
-from django.shortcuts import redirect
+from .forms import IngredientForm, MenuItemForm, RecipieRequirementsForm, PurchaseForm, MenuItemFormSet
+from django.shortcuts import redirect, render
 from django.contrib import messages
 
 class HomeView(TemplateView):
@@ -18,9 +18,6 @@ class IngredientCreateView(CreateView):
     template_name = 'forms/add_ingredient.html'
     success_url = '/inventory/list/'
 
-    def form_valid(self, form):
-        messages.success(self.request, "Ingredient created successfully.")
-        return super().form_valid(form)
     
 class IngredientUpdateView(UpdateView):
     model = Ingredients
@@ -28,9 +25,6 @@ class IngredientUpdateView(UpdateView):
     template_name = 'forms/update_ingredient.html'
     success_url = '/inventory/list/'
 
-    def form_valid(self, form):
-        messages.success(self.request, "Ingredient updated successfully.")
-        return super().form_valid(form)
     
 class IngredientDeleteView(DeleteView):
     model = Ingredients
@@ -43,14 +37,29 @@ class MenuListView(ListView):
     context_object_name = 'menu_items'
 
 class MenuItemCreateView(CreateView):
-    model = MenuItem
-    form_class = MenuItemForm
     template_name = 'forms/add_menu_item.html'
-    success_url = '/menu/'
+    def get(self, request):
+        item_form = MenuItemForm()
+        formset = MenuItemFormSet()
+        return render(request, self.template_name, {
+            "item_form": item_form,
+            "formset": formset
+        })
 
-    def form_valid(self, form):
-        messages.success(self.request, "Menu item created successfully.")
-        return super().form_valid(form)
+    def post(self, request):
+        item_form = MenuItemForm(request.POST)
+        formset = MenuItemFormSet(request.POST)
+
+        if item_form.is_valid() and formset.is_valid():
+            menu_item = item_form.save()
+            formset.instance = menu_item
+            formset.save()
+            return redirect("menu-list")
+
+        return render(request, self.template_name, {
+            "item_form": item_form,
+            "formset": formset
+        })
 
 class RecipieRequirementsCreateView(CreateView):
     model = RecipieRequirements
@@ -58,10 +67,6 @@ class RecipieRequirementsCreateView(CreateView):
     template_name = 'forms/add_recipie_requirement.html'
     success_url = '/menu/'
 
-    def form_valid(self, form):
-        messages.success(self.request, "Recipie requirement added successfully.")
-        return super().form_valid(form)
-    
 class PurchaseCreateView(CreateView):
     model = Purchase
     form_class = PurchaseForm
@@ -77,7 +82,7 @@ class PurchaseCreateView(CreateView):
 
         for req in requirements:
             needed = req.quantity * quantity
-            available = req.ingredient.quanity
+            available = req.ingredient.quantity
 
             if needed > available:
                 messages.error(
@@ -87,7 +92,7 @@ class PurchaseCreateView(CreateView):
                 return redirect("add-purchase")
 
         for req in requirements:
-            req.ingredient.quanity -= req.quantity * quantity
+            req.ingredient.quantity -= req.quantity * quantity
             req.ingredient.save()
 
         return super().form_valid(form)
