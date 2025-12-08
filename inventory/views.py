@@ -4,39 +4,41 @@ from .models import Ingredients, MenuItem, RecipieRequirements, Purchase
 from .forms import IngredientForm, MenuItemForm, RecipieRequirementsForm, PurchaseForm, MenuItemFormSet
 from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'inventory/home.html'
-class InventoryView(ListView):
+class InventoryView(LoginRequiredMixin, ListView):
     model = Ingredients
     template_name = 'inventory/inventory_list.html'
     context_object_name = 'ingredients'
 
-class IngredientCreateView(CreateView):
+class IngredientCreateView(LoginRequiredMixin, CreateView):
     model = Ingredients
     form_class = IngredientForm
     template_name = 'forms/add_ingredient.html'
     success_url = '/inventory/list/'
 
     
-class IngredientUpdateView(UpdateView):
+class IngredientUpdateView(LoginRequiredMixin, UpdateView):
     model = Ingredients
     form_class = IngredientForm
     template_name = 'forms/update_ingredient.html'
     success_url = '/inventory/list/'
 
     
-class IngredientDeleteView(DeleteView):
+class IngredientDeleteView(LoginRequiredMixin, DeleteView):
     model = Ingredients
     template_name = 'inventory/ingredient_delete.html'
     success_url = '/inventory/list/'
 
-class MenuListView(ListView):
+class MenuListView(LoginRequiredMixin, ListView):
     model = MenuItem
     template_name = 'inventory/menu_list.html'
     context_object_name = 'menu_items'
 
-class MenuItemCreateView(CreateView):
+class MenuItemCreateView(LoginRequiredMixin, CreateView):
     template_name = 'forms/add_menu_item.html'
     def get(self, request):
         item_form = MenuItemForm()
@@ -61,13 +63,13 @@ class MenuItemCreateView(CreateView):
             "formset": formset
         })
 
-class RecipieRequirementsCreateView(CreateView):
+class RecipieRequirementsCreateView(LoginRequiredMixin, CreateView):
     model = RecipieRequirements
     form_class = RecipieRequirementsForm
     template_name = 'forms/add_recipie_requirement.html'
     success_url = '/menu/'
 
-class PurchaseCreateView(CreateView):
+class PurchaseCreateView(LoginRequiredMixin, CreateView):
     model = Purchase
     form_class = PurchaseForm
     template_name = "forms/add_purchase.html"
@@ -98,12 +100,12 @@ class PurchaseCreateView(CreateView):
         return super().form_valid(form)
 
 
-class PurchaseListView(ListView):
+class PurchaseListView(LoginRequiredMixin, ListView):
     model = Purchase
     template_name = 'inventory/purchase_list.html'
     context_object_name = 'purchases'
 
-class FinanceReportView(TemplateView):
+class FinanceReportView(LoginRequiredMixin, TemplateView):
     template_name = 'inventory/finance_report.html'
 
     def get_context_data(self, **kwargs):
@@ -128,3 +130,8 @@ class FinanceReportView(TemplateView):
         context['profit'] = total_revenue - total_cost
         return context
     
+class LoginView(LoginView):
+    template_name = 'auth/login.html'
+
+class LogoutView(LogoutView):
+    pass

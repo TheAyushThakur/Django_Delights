@@ -10,7 +10,10 @@ from .views import (
     PurchaseCreateView,
     PurchaseListView,
     FinanceReportView,
-    HomeView )
+    HomeView,
+    LoginView,
+    LogoutView
+)
 
 urlpatterns = [
     path('inventory/list/', InventoryView.as_view(), name='inventory-list'),
@@ -24,4 +27,6 @@ urlpatterns = [
     path('purchases/', PurchaseListView.as_view(), name='purchase-list'),
     path('finance-report/', FinanceReportView.as_view(), name='finance-report'),
     path("", HomeView.as_view(), name="home"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(), name="logout"),
 ]
