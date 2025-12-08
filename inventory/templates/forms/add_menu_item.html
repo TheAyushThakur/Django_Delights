@@ -18,15 +18,21 @@
 
         {% for form in formset %}
             <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     {{ form.ingredient.label_tag }}
                     {{ form.ingredient }}
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     {{ form.quantity.label_tag }}
                     {{ form.quantity }}
                 </div>
+
+                <div class="col-md-4">
+                    {{form.required_units.label_tag}}
+                    {{form.required_units}}
+                </div>   
+
             </div>
         {% endfor %}
     </div>

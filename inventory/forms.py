@@ -14,7 +14,7 @@ class MenuItemForm(forms.ModelForm):
 MenuItemFormSet = forms.inlineformset_factory(
     MenuItem,
     RecipieRequirements,
-    fields=('ingredient', 'quantity'),
+    fields=('ingredient', 'quantity', 'required_units'),
     extra=5,
     can_delete= False
 )
@@ -22,7 +22,7 @@ MenuItemFormSet = forms.inlineformset_factory(
 class RecipieRequirementsForm(forms.ModelForm):
     class Meta:
         model = RecipieRequirements
-        fields = ['menu_item', 'ingredient', 'quantity']
+        fields = ['ingredient', 'quantity', 'required_units']
 
 class PurchaseForm(forms.ModelForm):
     class Meta:

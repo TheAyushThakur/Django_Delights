@@ -6,7 +6,20 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from decimal import Decimal
 
+
+UNIT_CONVERSION = {
+    "KG": Decimal("1000"),
+    "G": Decimal("1"),
+
+    "L": Decimal("1000"),
+    "ML": Decimal("1"),
+    
+    "OZ": Decimal("28.3495"),
+
+    "PCS": Decimal("1"),
+}
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'inventory/home.html'
 class InventoryView(LoginRequiredMixin, ListView):
@@ -76,29 +89,39 @@ class PurchaseCreateView(LoginRequiredMixin, CreateView):
     success_url = '/purchases/'
 
     def form_valid(self, form):
+
         purchase = form.save(commit=False)
         item = purchase.menu_item
-        quantity = purchase.quantity  
+        order_qty = purchase.quantity  
 
         requirements = RecipieRequirements.objects.filter(menu_item=item)
 
         for req in requirements:
-            needed = req.quantity * quantity
-            available = req.ingredient.quantity
+            ingredient = req.ingredient
 
-            if needed > available:
+            # convert recipe requirement to base unit
+            required_amount = req.quantity * UNIT_CONVERSION[req.required_units.upper()]
+
+            available_amount = ingredient.quantity * UNIT_CONVERSION[ingredient.units.upper()]
+
+            total_needed = required_amount * order_qty
+
+            if total_needed > available_amount:
                 messages.error(
                     self.request,
-                    f"Not enough {req.ingredient.name} to make {quantity}x {item.title}!"
+                    f"Not enough {ingredient.name} available!"
                 )
-                return redirect("add-purchase")
+                return redirect("purchase-add")
 
+        # Now deduct stock safely
         for req in requirements:
-            req.ingredient.quantity -= req.quantity * quantity
-            req.ingredient.save()
+            ingredient = req.ingredient
+
+            deduct_amount = (req.quantity * UNIT_CONVERSION[req.required_units.upper()]) * order_qty
+            ingredient.quantity -= deduct_amount / UNIT_CONVERSION[ingredient.units.upper()]
+            ingredient.save()
 
         return super().form_valid(form)
-
 
 class PurchaseListView(LoginRequiredMixin, ListView):
     model = Purchase
