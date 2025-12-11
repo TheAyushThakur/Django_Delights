@@ -16,7 +16,7 @@ MenuItemFormSet = forms.inlineformset_factory(
     RecipieRequirements,
     fields=('ingredient', 'quantity', 'required_units'),
     extra=5,
-    can_delete= False
+    can_delete= True
 )
 
 class RecipieRequirementsForm(forms.ModelForm):

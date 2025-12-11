@@ -1,8 +1,9 @@
 from django.views.generic import TemplateView, ListView, DeleteView, CreateView, UpdateView
 from django.db.models import Sum, F
+from django.views import View
 from .models import Ingredients, MenuItem, RecipieRequirements, Purchase
 from .forms import IngredientForm, MenuItemForm, RecipieRequirementsForm, PurchaseForm, MenuItemFormSet
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -76,6 +77,16 @@ class MenuItemCreateView(LoginRequiredMixin, CreateView):
             "formset": formset
         })
 
+class MenuItemUpdateView(LoginRequiredMixin, UpdateView):
+    model = MenuItem
+    form_class = MenuItemForm
+    template_name = "forms/menu_item_update.html"
+    success_url = "/menu/"
+
+class MenuItemDeleteView(LoginRequiredMixin, DeleteView):
+    model = MenuItem
+    template_name = 'inventory/menu_item_delete.html'
+    success_url = '/menu/'
 class RecipieRequirementsCreateView(LoginRequiredMixin, CreateView):
     model = RecipieRequirements
     form_class = RecipieRequirementsForm

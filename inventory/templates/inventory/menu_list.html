@@ -5,16 +5,23 @@
 {% for item in menu_items %}
 <div class="card mb-3">
     <div class="card-body">
-        <h4>{{ item.title }} — Rs {{ item.price }}</h4>
+        <div>
+            <h4>{{ item.title }} — Rs {{ item.price }}</h4>
 
-        <h6>Ingredients:</h6>
-        <ul>
-            {% for req in item.recipierequirements_set.all %}
-            <li>
-                {{ req.quantity }} {{ req.ingredient.units }} of {{ req.ingredient.name }}
-            </li>
-            {% endfor %}
-        </ul>
+            <h6>Ingredients:</h6>
+            <ul>
+                {% for req in item.recipierequirements_set.all %}
+                <li>
+                    {{ req.quantity }} {{ req.ingredient.units }} of {{ req.ingredient.name }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="text-end">
+            <a href="{% url 'update-menu-item' item.pk %}" class="btn btn-sm btn-success">Update</a>
+            <a href="{% url 'delete-menu-item' item.pk %}" class="btn btn-sm btn-danger">Delete</a>
+        </div>
     </div>
 </div>
 {% endfor %}
